@@ -1,0 +1,179 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    build: ./requirements/nginx
+    image: nginx:inception
+    container_name: nginx
+    networks:
+      - inception_network
+    ports: 
+      - "443:443"
+    restart: always
+    depends_on:
+      - wordpress
+      - adminer
+    volumes:
+      - wordpress:/var/www/html
+      - adminer:/var/www/html/adminer
+      - website:/var/www/html/website
+      - ./requirements/nginx/tools/404.html:/var/www/html/404.html
+    environment:
+      - URL=${URL}
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress:inception
+    container_name: wordpress
+    networks:
+      - inception_network
+    restart: always
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+      - redis
+      - ftp
+    environment:
+      - WP_DB_NAME=${WP_DB_NAME}
+      - WP_DB_USER=${WP_DB_USER}
+      - WP_DB_PASS=${WP_DB_PASS}
+      - DB_HOST=${DB_HOST}
+      - URL=${URL}
+      - WP_TITLE=${WP_TITLE}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
+      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      - WP_EMAIL=${WP_EMAIL}
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: mariadb:inception
+    container_name: mariadb
+    networks:
+      - inception_network
+    restart: always
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      - DB_ROOT_PASS=${DB_ROOT_PASS}
+      - WP_DB_NAME=${WP_DB_NAME}
+      - WP_DB_USER=${WP_DB_USER}
+      - WP_DB_PASS=${WP_DB_PASS}
+ 
+  
+  adminer:
+    build: ./requirements/bonus/adminer
+    image: adminer:inception
+    container_name: adminer
+    networks:
+      - inception_network
+    restart: always
+    volumes:
+      - adminer:/var/www/html/adminer
+    depends_on:
+      - mariadb
+
+  redis:
+    build: ./requirements/bonus/redis
+    image: redis:inception
+    container_name: redis
+    networks:
+      - inception_network
+    restart: always
+
+  website:
+    build: ./requirements/bonus/website
+    image: website:inception
+    container_name: website
+    networks:
+      - inception_network
+    restart: always
+    ports:
+      - "8888:80"
+    volumes:
+      - website:/var/www/html/website
+    depends_on:
+      - nginx
+    environment:
+      - URL=${URL}
+
+  ftp:
+    build: ./requirements/bonus/ftp
+    image: ftp:inception
+    container_name: ftp
+    networks:
+      - inception_network
+    restart: always
+    volumes:
+      - wordpress:/var/www/html
+    ports:
+      - "21:21"
+    environment:
+      - FTP_USER=${FTP_USER}
+      - FTP_PASS=${FTP_PASS}
+
+  portainer:
+    build: ./requirements/bonus/portainer
+    image: portainer:inception
+    container_name: portainer
+    networks:
+      - inception_network
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+networks:
+
+  inception_network:
+    name: inception_network
+    driver: bridge
+
+volumes:
+
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${LOGIN}/data
+      o: bind
+    
+
+  mariadb:
+    name: mariadb
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${LOGIN}/data/mariadb
+      o: bind
+  
+  adminer:
+    name: adminer
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${LOGIN}/data/adminer
+      o: bind
+
+  website:
+    name: website
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${LOGIN}/data/website
+      o: bind
+
+  portainer:
+    name: portainer
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${LOGIN}/data/portainer
+      o: bind
+

@@ -1,0 +1,12 @@
+FROM alpine:3.17
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache redis && \
+    sed -i "s/bind 127.0.0.1/#bind 127.0.0.1/"  /etc/redis.conf && \
+    echo "maxmemory 256mb" >>  /etc/redis.conf && \
+    echo "maxmemory-policy allkeys-lru" >> /etc/redis.conf && \
+    echo "protected-mode no" >> /etc/redis.conf
+
+EXPOSE 6379
+
+ENTRYPOINT [ "redis-server" , "/etc/redis.conf" ]
