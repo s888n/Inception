@@ -1,8 +1,20 @@
 # Inception
 
+<img src="images/inc.png" alt="Inception" width="600">
+
 ## Description
 
     a small infrastructure for a  web application composed of WordPress , MariaDB and Nginx.
+
+## Features
+
+    - WordPress
+    - MariaDB
+    - Nginx
+    - Adminer
+    - Redis
+    - FTP
+    - Portainer
 
 ## Prerequisites
 
