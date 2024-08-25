@@ -18,6 +18,6 @@
 
 ## Resources
 
-    - [Docker Compose](https://docs.docker.com/compose/)
-    - [Digital Ocean](https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose)
-    - [vbachele's Repo](https://github.com/vbachele/Inception)
+- [Docker](https://docs.docker.com/compose/)
+- [Digital Ocean](https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-docker-compose)
+- [vbachele's Repo](https://github.com/vbachele/Inception)
